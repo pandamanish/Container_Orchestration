@@ -86,10 +86,13 @@ Frontend:
 ```docker tag learner-frontend:latest pandamanish/learner-frontend:latest
 docker push pandamanish/learner-frontend:latest
 ```
+![Description of the image](Images/docker_hub_frontend.png)
+
 Backend:
 ```docker tag backend:latest pandamanish/backend:latest
 docker push pandamanish/backend:latest
 ```
+![Description of the image](Images/dockerpuh_back.png)
 6. Install Minikube
 Download and install Minikube:
 ```
@@ -133,10 +136,10 @@ Get the Minikube IP:
 minikube ip
 ```
 Use the Minikube IP with the respective NodePorts to access the applications:
-```
 Frontend: http://192.168.49.2:30080
+![Description of the image](Images/frontend.png)
 Backend: http://192.168.49.2:30081
-```
+
 8. Create and Deploy Helm Charts
 Frontend:
 Create a Helm chart:
@@ -144,6 +147,7 @@ Create a Helm chart:
 helm create frontend
 ```
 Update the values.yaml and templates (deployment.yaml, service.yaml) with values from frontend-deployment.yaml.
+
 Install the frontend Helm chart:
 ```
 helm install frontend ./frontend
@@ -160,11 +164,6 @@ Install the backend Helm chart:
 
 ```
 helm install backend ./backend
-```
-Upgrade if necessary:
-
-```
-helm upgrade backend ./backend
 ```
 9. Set Up Jenkins for CI/CD
 Once installed, Jenkins was accessed at http://44.244.61.68:8080. After unlocking Jenkins using the initial admin password and completing the setup wizard, we installed the necessary plugins:
@@ -229,6 +228,7 @@ Deploy:This stage deploys the updated Docker image to the Kubernetes cluster.
 End:Marks the successful completion of the pipeline.
 
 Cicking Build Now to trigger the pipeline. 
+![Description of the image](Images/Pipeline.PNG)
 
 
 
