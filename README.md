@@ -72,7 +72,9 @@ Run the frontend container:
 docker run -d -p 3000:3000 learner-frontend:latest
 ```
 Run the backend container:
-```docker run -d -p 5000:5000 backend:latest```
+```
+docker run -d -p 5000:5000 backend:latest
+```
 
 5. Push Docker Images to Docker Hub
 Log in to Docker Hub:
@@ -165,7 +167,7 @@ Upgrade if necessary:
 helm upgrade backend ./backend
 ```
 9. Set Up Jenkins for CI/CD
-Once installed, Jenkins was accessed at http://<instance-IP>:8080. After unlocking Jenkins using the initial admin password and completing the setup wizard, we installed the necessary plugins:
+Once installed, Jenkins was accessed at http://44.244.61.68:8080. After unlocking Jenkins using the initial admin password and completing the setup wizard, we installed the necessary plugins:
 
 Pipeline
 Docker Pipeline
@@ -184,7 +186,7 @@ sudo apt install -y jenkins
 sudo systemctl start jenkins
 sudo systemctl enable jenkins
 ```
-Access Jenkins on http://<instance-IP>:8080.
+Access Jenkins on http://44.244.61.68:8080.
 
 Install Plugins:
 Install the following plugins:
