@@ -21,122 +21,160 @@ MongoDB running and configured for the backend.
 2. **Backend**: Node.js with Express.
 3. **Database**: MongoDB
 
-# Step
-1.created EC2 instances with t3.medium post which we ran
-sudo apt update
-2.Install Docker using the following commands:
+Deployment Steps
+1. Set Up EC2 Instances
+Create AWS EC2 instances with t3.medium specifications.
+Run the following command to update the system:
 ```
-sudo apt-get install -y docker.io
+sudo apt update
+```
+3. Install Docker
+Install Docker on your EC2 instances:
+```sudo apt-get install -y docker.io
 docker --version
 ```
-3.Did git clone to the repository mentioned above to get the frontend and backend folder.
-```cd learnerReportCS_frontend
+
+3. Clone the Application Repositories
+Clone the provided repositories to fetch the frontend and backend codebases:
 ```
-**Note**- update the Dockerfile in that repo from Node :16 to 18, as it was getting error based on version compatibility.
-Once the Dockerfile is ready , run the docker build for frontend
+git clone https://github.com/UnpredictablePrashant/learnerReportCS_frontend.git
+git clone https://github.com/UnpredictablePrashant/learnerReportCS_backend.git
+```
+4. Build and Run Docker Images
+Frontend:
+Navigate to the frontend directory:
+```
+cd learnerReportCS_frontend
+```
+Update the Dockerfile:
+Replace node:16 with node:18 due to version compatibility issues.
+
+Build the Docker image:
 ```
 docker build -t learner-frontend:latest .
 ```
-```cd ../learnerReportCS_backend
+Backend:
+Navigate to the backend directory:
 ```
-**Note**- did the exact same thing for backend , updated the dockerfile with version 18 and surely change your mongo uri in the config.env file. 
+cd ../learnerReportCS_backend
+```
+Update the Dockerfile:
+Replace node:16 with node:18.
+Update the config.env file:
+Ensure the correct MongoDB URI is provided.
+Build the Docker image:
 
-```docker build -t backend:latest .
-```
-once the build is done ,run it with below mentioned ports:
+```docker build -t backend:latest .```
+Run the Docker Containers:
+Run the frontend container:
+
 ```
 docker run -d -p 3000:3000 learner-frontend:latest
-docker run -d -p 5000:5000 backend:latest
 ```
-post that when you check you might get error with after tag and pushing the image to docker hub for which you need to run 
-```sudo docker login ``` - mentioned the passsword and username and login should get successful.
+Run the backend container:
+```docker run -d -p 5000:5000 backend:latest```
 
-now , tagged the image:
+5. Push Docker Images to Docker Hub
+Log in to Docker Hub:
+```
+sudo docker login
+```
+Tag and push the images:
+Frontend:
 ```docker tag learner-frontend:latest pandamanish/learner-frontend:latest
+docker push pandamanish/learner-frontend:latest
 ```
+Backend:
 ```docker tag backend:latest pandamanish/backend:latest
+docker push pandamanish/backend:latest
 ```
-and psuhed to docker hub:
-```docker push pandamanish/learner-frontend:latest
-  docker push pandamanish/backend:latest
+6. Install Minikube
+Download and install Minikube:
 ```
-Next step was to Instal minikube :
-```curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 ```
-once the image is pushed to docker , now created a frontend-deployment.yaml and backend-deployment.yaml files specifically keep check of image name nad indentation, as i faced error with indentation in the learner-frontend & learner-backend foler.
-image of yaml files here:
-
-check if kubectl is installed or not:
-```kubectl version --client```
-if not installed run these below commands to install kubectl:
-
-define each:
-```curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"```
-```chmod +x kubectl```
-```sudo mv kubectl /usr/local/bin/```
-now once everything is installed , can start the minikube:
-```minikube start --driver=docker
+Start Minikube:
 ```
+minikube start --driver=docker
+```
+Configure Docker to use Minikube’s environment:
 ```
 eval $(minikube docker-env)
 ```
-Once the deployment files are ready can run the apply for the kubectl on each deployment file:
+7. Deploy Using Kubernetes
+Prepare Deployment Files:
+Create frontend-deployment.yaml and backend-deployment.yaml files with appropriate configurations.
+Ensure the correct Docker image name is specified.
+Maintain proper indentation to avoid deployment errors.
+Apply the Deployment Files:
+Apply the frontend deployment:
 ```
 kubectl apply -f frontend-deployment.yaml
 ```
+Apply the backend deployment:
 ```
 kubectl apply -f backend-deployment.yaml
 ```
-now to check the pods are running perfectly:
+Verify Deployment:
+Check the running pods:
 ```
 kubectl get pods
 ```
-and the internal and external services:
+Check the services:
 ```
 kubectl get services
 ```
-once the pods and services are running perfectly , can run ```minikube ip``` to get the ip and with that port no which we have mentioned in the external service 
-kubectl get services
-
-Access the applications:
-
-Frontend: http://<Minikube-IP>:30080
-Backend: http://<Minikube-IP>:30081
-
-Next for creating the HELM chart:
+Access the Applications:
+Get the Minikube IP:
+```
+minikube ip
+```
+Use the Minikube IP with the respective NodePorts to access the applications:
+```
+Frontend: http://192.168.49.2:30080
+Backend: http://192.168.49.2:30081
+```
+8. Create and Deploy Helm Charts
+Frontend:
+Create a Helm chart:
+```
 helm create frontend
-created values.yaml file will store the customizable values for the Helm chart from the frontend-deployment.yaml
-image of file:
-To replace static deployment YAML with a templated version. Update templates/deployment.yaml
-image of file:
-Created service.yaml and moved Service definition from frontend-deployment.yaml into a separate file called templates/service.yaml
-created chart.yaml to mention the metadata of heml chart
-
-
-cd learnerReportCS_frontend/helm/frontend
-
+```
+Update the values.yaml and templates (deployment.yaml, service.yaml) with values from frontend-deployment.yaml.
+Install the frontend Helm chart:
+```
 helm install frontend ./frontend
-kubectl get pods
-kubectl get services]]]
+```
 
-helm upgrade frontend ./frontend
-
+Backend:
+Create a Helm chart:
+```
 helm create backend
-values.yaml File for Backend Update the values.yaml file for the backend service:
-Update the templates/deployment.yaml Replace the static backend deployment YAML with a templated version in templates/deployment.yaml:
-Update the templates/service.yaml Replace the static backend service YAML with a templated version in templates/service.yaml
-Verify Chart.yaml Ensure the Chart.yaml file contains appropriate metadata for the backend
-Deploy the Backend Helm Chart
+```
+Update the values.yaml and templates (deployment.yaml, service.yaml) with values from backend-deployment.yaml.
 
+Install the backend Helm chart:
+
+```
 helm install backend ./backend
-kubectl get pods
-kubectl get services
+```
+Upgrade if necessary:
 
-Now jekins part:
+```
+helm upgrade backend ./backend
+```
+9. Set Up Jenkins for CI/CD
+Once installed, Jenkins was accessed at http://<instance-IP>:8080. After unlocking Jenkins using the initial admin password and completing the setup wizard, we installed the necessary plugins:
 
-Install:
+Pipeline
+Docker Pipeline
+GitHub
+Kubernetes
+Install Jenkins:
+Install Jenkins on your EC2 instance:
 
+```
 sudo apt update
 sudo apt install -y openjdk-11-jdk
 wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
@@ -144,41 +182,45 @@ sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sour
 sudo apt update
 sudo apt install -y jenkins
 sudo systemctl start jenkins
-sudo systemctl enable jenkinsInstall Required Plugins:
+sudo systemctl enable jenkins
+```
+Access Jenkins on http://<instance-IP>:8080.
 
-Install the following plugins from the Jenkins dashboard:
+Install Plugins:
+Install the following plugins:
 Pipeline
 Docker Pipeline
 GitHub
 Kubernetes
-
+Add Docker Hub Credentials:
 Go to Manage Jenkins → Manage Credentials.
-Add a new credential with the following:
+Add a new credential with:
 Username: Your Docker Hub username.
 Password: Your Docker Hub password.
 ID: docker-hub-credentials.
+Set Up Jenkinsfile:
+Add a Jenkinsfile to each repository (frontend and backend) with Groovy code for CI/CD automation.
 
-Created jenkins file /groovy code
+Push the Jenkinsfile to GitHub:
 
+```
 git add Jenkinsfile
 git commit -m "Added Jenkinsfile for CI/CD"
 git push origin main
-
-
-Set Up Jenkins Pipeline Jobs:
+```
+Create Jenkins Pipeline Jobs:
 
 Go to Jenkins Dashboard → New Item.
-Select Pipeline, and name it frontend-pipeline or backend-pipeline.
+Name the pipeline (frontend-pipeline or backend-pipeline).
 Under the Pipeline section:
-Choose "Pipeline script from SCM."
-Select Git as SCM.
-Provide the repository URL (e.g., https://github.com/UnpredictablePrashant/learnerReportCS_frontend.git).
+Select "Pipeline script from SCM."
+Choose Git as SCM.
+Provide the repository URL and set the script path to Jenkinsfile.
 Set the script path to Jenkinsfile.
+Save the configuration.
 
-Trigger the Pipeline:
-
-Save the pipeline configuration.
-Click Build Now to run the pipeline.
+Run the Pipeline:
+Click Build Now to trigger the pipeline. 
 
 
 
