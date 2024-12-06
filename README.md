@@ -218,9 +218,15 @@ Choose Git as SCM.
 Provide the repository URL and set the script path to Jenkinsfile.
 Set the script path to Jenkinsfile.
 Save the configuration.
+Pipeline Stages would be something like:
+Start:
+Jenkins fetches the code from the Source Control Management (SCM) system (e.g. GitHub repository),it would pull the learnerReportCS_frontend or learnerReportCS_backend repository.
+Build: Jenkins builds the Docker image for the updated code.
+Test: Automated tests for the frontend or backend run in this stage.
+Deploy:This stage deploys the updated Docker image to the Kubernetes cluster.
+End:Marks the successful completion of the pipeline.
 
-Run the Pipeline:
-Click Build Now to trigger the pipeline. 
+Cicking Build Now to trigger the pipeline. 
 
 
 
